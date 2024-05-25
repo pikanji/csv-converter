@@ -282,7 +282,7 @@ class _ExampleDragTargetState extends State<ExampleDragTarget> {
       var outputFile = XFile.fromData(shiftJisData);
       var outputFilePath = '${p.dirname(file.path)}${p.separator}${p.basenameWithoutExtension(file.path)}_converted.csv';
       debugPrint('output file path: $outputFilePath');
-      // await outputFile.saveTo(outputFilePath);
+      await outputFile.saveTo(outputFilePath);
       outputFilePaths.add(outputFilePath);
     }
     return outputFilePaths;
