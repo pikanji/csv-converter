@@ -280,6 +280,12 @@ class _ExampleDragTargetState extends State<ExampleDragTarget> {
           var decodedCsv = shiftJis.decode(bytes);
           debugPrint(shiftJis.decode(bytes));
 
+          // Replace characters incompatible in shift-jis
+          // FULL-WIDTH HYPHEN-MINUS '－' (U+FF0D) -> EM DASH '—' (U+2014)
+          decodedCsv = decodedCsv.replaceAll('－', '—');
+          // MINUS SIGN '−' (U+2212) -> EM DASH '—' (U+2014)
+          decodedCsv = decodedCsv.replaceAll('−', '—');
+
           var resultCsv = convertCsvFormat(decodedCsv);
           debugPrint(resultCsv);
 
