@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:charset/charset.dart';
@@ -265,20 +263,15 @@ class _ExampleDragTargetState extends State<ExampleDragTarget> {
           _list.addAll(detail.files);
         });
 
-        // printOutputColumns();
-
-        debugPrint('onDragDone:');
         for (final file in detail.files) {
-
-          debugPrint('  ${file.path} ${file.name}'
-              '  ${await file.lastModified()}'
-              '  ${await file.length()}'
-              '  ${file.mimeType}');
+          // debugPrint('  ${file.path} ${file.name}'
+          //     '  ${await file.lastModified()}'
+          //     '  ${await file.length()}'
+          //     '  ${file.mimeType}');
 
           var bytes = await file.readAsBytes();
           // Assuming input file is encoded as Shift-JIS
           var decodedCsv = shiftJis.decode(bytes);
-          debugPrint(shiftJis.decode(bytes));
 
           // Replace characters incompatible in shift-jis
           // FULL-WIDTH HYPHEN-MINUS '－' (U+FF0D) -> EM DASH '—' (U+2014)
@@ -316,11 +309,11 @@ class _ExampleDragTargetState extends State<ExampleDragTarget> {
       child: Container(
         height: 200,
         width: 200,
-        color: _dragging ? Colors.blue.withOpacity(0.4) : Colors.black26,
+        color: _dragging ? Colors.blue.withOpacity(0.4) : Colors.white70,
         child: Stack(
           children: [
             if (_list.isEmpty)
-              const Center(child: Text("Drop here"))
+              const Center(child: Text("CSVファイルをここへドロップ"))
             else
               Text(_list.map((e) => e.path).join("\n")),
             if (offset != null)
