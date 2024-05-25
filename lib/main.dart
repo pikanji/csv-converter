@@ -55,6 +55,7 @@ class ExampleDragTarget extends StatefulWidget {
 
 class _ExampleDragTargetState extends State<ExampleDragTarget> {
   final List<XFile> _list = [];
+  String _message = '';
 
   bool _dragging = false;
 
@@ -255,39 +256,51 @@ class _ExampleDragTargetState extends State<ExampleDragTarget> {
     return const ListToCsvConverter().convert(outputRowsAsListOfValues);
   }
 
+  /// Returns a list of filepath of output files.
+  Future<List<String>> convertCsvFiles(List<XFile> files) async {
+    List<String> outputFilePaths = [];
+    for (final file in files) {
+      // debugPrint('  ${file.path} ${file.name}'
+      //     '  ${await file.lastModified()}'
+      //     '  ${await file.length()}'
+      //     '  ${file.mimeType}');
+
+      var bytes = await file.readAsBytes();
+      // Assuming input file is encoded as Shift-JIS
+      var decodedCsv = shiftJis.decode(bytes);
+
+      // Replace characters incompatible in shift-jis
+      // FULL-WIDTH HYPHEN-MINUS '－' (U+FF0D) -> EM DASH '—' (U+2014)
+      decodedCsv = decodedCsv.replaceAll('－', '—');
+      // MINUS SIGN '−' (U+2212) -> EM DASH '—' (U+2014)
+      decodedCsv = decodedCsv.replaceAll('−', '—');
+
+      var resultCsv = convertCsvFormat(decodedCsv);
+      debugPrint(resultCsv);
+
+      var shiftJisData = Uint8List.fromList(shiftJis.encode(resultCsv));
+      var outputFile = XFile.fromData(shiftJisData);
+      var outputFilePath = '${p.dirname(file.path)}${p.separator}${p.basenameWithoutExtension(file.path)}_converted.csv';
+      debugPrint('output file path: $outputFilePath');
+      // await outputFile.saveTo(outputFilePath);
+      outputFilePaths.add(outputFilePath);
+    }
+    return outputFilePaths;
+  }
+
   @override
   Widget build(BuildContext context) {
     return DropTarget(
       onDragDone: (detail) async {
         setState(() {
-          _list.addAll(detail.files);
+          // _list.clear();
+          // _list.addAll(detail.files);
+          _message = '${detail.files.map((e) => e.path).join('\n')}\nを変換しています・・・\n\n';
         });
-
-        for (final file in detail.files) {
-          // debugPrint('  ${file.path} ${file.name}'
-          //     '  ${await file.lastModified()}'
-          //     '  ${await file.length()}'
-          //     '  ${file.mimeType}');
-
-          var bytes = await file.readAsBytes();
-          // Assuming input file is encoded as Shift-JIS
-          var decodedCsv = shiftJis.decode(bytes);
-
-          // Replace characters incompatible in shift-jis
-          // FULL-WIDTH HYPHEN-MINUS '－' (U+FF0D) -> EM DASH '—' (U+2014)
-          decodedCsv = decodedCsv.replaceAll('－', '—');
-          // MINUS SIGN '−' (U+2212) -> EM DASH '—' (U+2014)
-          decodedCsv = decodedCsv.replaceAll('−', '—');
-
-          var resultCsv = convertCsvFormat(decodedCsv);
-          debugPrint(resultCsv);
-
-          var shiftJisData = Uint8List.fromList(shiftJis.encode(resultCsv));
-          var outputFile = XFile.fromData(shiftJisData);
-          var outputFilePath = '${p.dirname(file.path)}${p.separator}${p.basenameWithoutExtension(file.path)}_converted.csv';
-          debugPrint('output file path: $outputFilePath');
-          await outputFile.saveTo(outputFilePath);
-        }
+        var outputFilePaths = await convertCsvFiles(detail.files);
+        setState(() {
+          _message += '以下に出力しました\n${outputFilePaths.join('\n')}';
+        });
       },
       onDragUpdated: (details) {
         setState(() {
@@ -312,10 +325,9 @@ class _ExampleDragTargetState extends State<ExampleDragTarget> {
         color: _dragging ? Colors.blue.withOpacity(0.4) : Colors.white70,
         child: Stack(
           children: [
-            if (_list.isEmpty)
-              const Center(child: Text("CSVファイルをここへドロップ"))
-            else
-              Text(_list.map((e) => e.path).join("\n")),
+            _message.isEmpty
+              ? const Center(child: Text("CSVファイルをここへドロップ"))
+              : Text(_message, style: Theme.of(context).textTheme.bodyMedium),
             if (offset != null)
               Align(
                 alignment: Alignment.topRight,
