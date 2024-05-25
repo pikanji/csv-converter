@@ -54,11 +54,8 @@ class ExampleDragTarget extends StatefulWidget {
 }
 
 class _ExampleDragTargetState extends State<ExampleDragTarget> {
-  final List<XFile> _list = [];
   String _message = '';
-
   bool _dragging = false;
-
   Offset? offset;
 
   /// Get value of CSV (given as List [row]) for the specified [key].
@@ -293,8 +290,6 @@ class _ExampleDragTargetState extends State<ExampleDragTarget> {
     return DropTarget(
       onDragDone: (detail) async {
         setState(() {
-          // _list.clear();
-          // _list.addAll(detail.files);
           _message = '${detail.files.map((e) => e.path).join('\n')}\nを変換しています・・・\n\n';
         });
         var outputFilePaths = await convertCsvFiles(detail.files);
