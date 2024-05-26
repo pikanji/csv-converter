@@ -1,6 +1,8 @@
 # csv_converter
 
 Generate a CSV file in one format from a CSV in another format.
+Currently this project is only for Windows desktop app.
+Desktop version processes CSV files on the local machine and does not upload to anywhere.
 
 ## Setting Up Local Development Environment
 Get source code.
