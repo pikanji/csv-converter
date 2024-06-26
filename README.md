@@ -1,16 +1,19 @@
 # csv_converter
 
 Generate a CSV file in one format from a CSV in another format.
+Currently this project is only for Windows desktop app.
+Desktop version processes CSV files on the local machine and does not upload to anywhere.
 
-## Getting Started
+## Setting Up Local Development Environment
+Get source code.
+```shell
+git clone https://github.com/pikanji/csv-converter.git
+```
 
-This project is a starting point for a Flutter application.
+Open in Android Studio.
+Open SDK manager. (You can use search feature of Android Studio to open it.)
+In SDK manager, select "Flutter" from side menu and specify "Flutter SDK path".
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Coding Standard
+### Style Guide
+Follow Flutter [Style guide for Flutter repo](https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo).
