@@ -3,8 +3,6 @@ import 'dart:typed_data';
 import 'package:charset/charset.dart';
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
-import 'package:cross_file/cross_file.dart';
-import 'package:path/path.dart' as p;
 
 class CsvConverterService  {
 
@@ -144,7 +142,7 @@ class CsvConverterService  {
     }
   }
 
-  static String convertCsvFormat(String inputCsv) {
+  static String _convertCsvFormat(String inputCsv) {
     List<List<String>> inputRowsAsListOfValues =
     const CsvToListConverter().convert(inputCsv, shouldParseNumbers: false);
 
@@ -201,36 +199,22 @@ class CsvConverterService  {
     return const ListToCsvConverter().convert(outputRowsAsListOfValues);
   }
 
-  /// Returns a list of filepath of output files.
-  static Future<List<String>> convertCsvFiles(List<XFile> files) async {
-    List<String> outputFilePaths = [];
-    for (final file in files) {
-      // debugPrint('  ${file.path} ${file.name}'
-      //     '  ${await file.lastModified()}'
-      //     '  ${await file.length()}'
-      //     '  ${file.mimeType}');
+  /// Converts the input CSV data [inputCsvAsBytes] into TalentPalette CSV
+  /// format and returns it. The input data is assumed to encoded as Shift-JIS.
+  static Uint8List convertCsvFormatShiftJis(Uint8List inputCsvAsBytes) {
+    var decodedCsv = shiftJis.decode(inputCsvAsBytes);
 
-      var bytes = await file.readAsBytes();
-      // Assuming input file is encoded as Shift-JIS
-      var decodedCsv = shiftJis.decode(bytes);
+    // Replace characters incompatible in shift-jis,
+    // because Dart internally handles string in unicode.
+    // FULL-WIDTH HYPHEN-MINUS '－' (U+FF0D) -> EM DASH '—' (U+2014)
+    decodedCsv = decodedCsv.replaceAll('－', '—');
+    // MINUS SIGN '−' (U+2212) -> EM DASH '—' (U+2014)
+    decodedCsv = decodedCsv.replaceAll('−', '—');
 
-      // Replace characters incompatible in shift-jis
-      // FULL-WIDTH HYPHEN-MINUS '－' (U+FF0D) -> EM DASH '—' (U+2014)
-      decodedCsv = decodedCsv.replaceAll('－', '—');
-      // MINUS SIGN '−' (U+2212) -> EM DASH '—' (U+2014)
-      decodedCsv = decodedCsv.replaceAll('−', '—');
+    var resultCsv = _convertCsvFormat(decodedCsv);
 
-      var resultCsv = convertCsvFormat(decodedCsv);
-      debugPrint(resultCsv);
-
-      var shiftJisData = Uint8List.fromList(shiftJis.encode(resultCsv));
-      var outputFile = XFile.fromData(shiftJisData);
-      var outputFilePath = '${p.dirname(file.path)}${p.separator}${p.basenameWithoutExtension(file.path)}_converted.csv';
-      debugPrint('output file path: $outputFilePath');
-      await outputFile.saveTo(outputFilePath);
-      outputFilePaths.add(outputFilePath);
-    }
-    return outputFilePaths;
+    var shiftJisData = Uint8List.fromList(shiftJis.encode(resultCsv));
+    return shiftJisData;
   }
 
 }

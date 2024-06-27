@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:desktop_drop/desktop_drop.dart';
+import 'package:cross_file/cross_file.dart';
+import 'package:path/path.dart' as p;
 
 import '../services/csv_converter_service.dart';
 
@@ -22,7 +24,7 @@ class _CsvConverterDragTargetState extends State<CsvConverterDragTarget> {
         setState(() {
           _message = '${detail.files.map((e) => e.path).join('\n')}\nを変換しています・・・\n\n';
         });
-        var outputFilePaths = await CsvConverterService.convertCsvFiles(detail.files);
+        var outputFilePaths = await _convertCsvFiles(detail.files);
         setState(() {
           _message += '以下に出力しました\n${outputFilePaths.join('\n')}';
         });
@@ -65,5 +67,22 @@ class _CsvConverterDragTargetState extends State<CsvConverterDragTarget> {
         ),
       ),
     );
+  }
+
+  /// Returns a list of filepath of output files.
+  static Future<List<String>> _convertCsvFiles(List<XFile> files) async {
+    List<String> outputFilePaths = [];
+    for (final file in files) {
+      var bytes = await file.readAsBytes();
+
+      var shiftJisData = CsvConverterService.convertCsvFormatShiftJis(bytes);
+
+      var outputFile = XFile.fromData(shiftJisData);
+      var outputFilePath = '${p.dirname(file.path)}${p.separator}${p.basenameWithoutExtension(file.path)}_converted.csv';
+      debugPrint('output file path: $outputFilePath');
+      await outputFile.saveTo(outputFilePath);
+      outputFilePaths.add(outputFilePath);
+    }
+    return outputFilePaths;
   }
 }
