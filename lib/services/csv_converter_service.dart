@@ -80,12 +80,12 @@ class CsvConverterService  {
     indexToIndexMap[7] = 4;
     indexToIndexMap[8] = 59;
     indexToIndexMap[9] = 60;
-    indexToIndexMap[10] = 37;
+    indexToIndexMap[10] = (List<String> inputRow) => [37, '${inputRow[9]}$multiByteSpace${inputRow[10]}'];
     indexToIndexMap[15] = 65;
     indexToIndexMap[16] = 64;
     indexToIndexMap[17] = 61;
     indexToIndexMap[18] = 62;
-    indexToIndexMap[19] = 63;
+    indexToIndexMap[19] = (List<String> inputRow) => [63, '${inputRow[18]}$multiByteSpace${inputRow[19]}'];
     indexToIndexMap[25] = 49;
     indexToIndexMap[26] = 66;
     indexToIndexMap[28] = 67;
