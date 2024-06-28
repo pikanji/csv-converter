@@ -40,3 +40,26 @@ void main() {
   });
 }
 ```
+
+## Measure Test Coverage
+参考: https://zenn.dev/o_ku/articles/68a34c428c5b65
+
+```shell
+flutter test --branch-coverage
+```
+`--branch-coverage`オプションをつけてテストを実行すると `coverage/lcov.info` というファイルがlocalに生成される。
+これを`lcov`を使ってHTMLに変換する。
+
+`lcov`はMacの場合、Homebrew経由でインストールできます。
+```shell
+brew install lcov
+```
+
+HTMLに変換する
+```shell
+genhtml coverage/lcov.info -o coverage/html --branch-coverage
+```
+コマンドを実行したディレクトリに`coverage/html/index.html`が生成される。
+
+TODO: 条件網羅のカバレッジも出したい
+TODO: カバーされていない分岐や、条件を簡単に確認するにはどうしたら良いのか？
