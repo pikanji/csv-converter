@@ -1,7 +1,13 @@
 # Unit Test
+## Running Unit Tests
+### Add Run Configuration in Android Studio
+* Open "Run/Debug Configuration" from "Run" menu -> "Edit Configurations..."
+* Click "+" on the top left of the dialog and select "Flutter test"
+* Select "All in directory" for "Test Scope".
+* Select `/test` directory in "Test directory" and save.
+* Select this run configuration just created and run. 
 
 ## Sample Test
-
 ```dart: widget_test.dart
 // This is a basic Flutter widget test.
 //
