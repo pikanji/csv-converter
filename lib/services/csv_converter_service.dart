@@ -126,6 +126,7 @@ class CsvConverterService  {
     indexToIndexMap[81] = 134;
     indexToIndexMap[82] = 135;
     indexToIndexMap[83] = 136;
+    indexToIndexMap[84] = 80;
     indexToIndexMap[100] = 91;
     indexToIndexMap[107] = 95;
     indexToIndexMap[111] = 110;
